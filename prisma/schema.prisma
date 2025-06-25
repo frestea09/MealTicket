@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  patientName String
+  patientId   String
+  room        String
+  diet        String
+  birthDate   DateTime
+  mealTime    String // "Pagi", "Siang", "Malam"
+  ticketDate  DateTime @default(now())
+  status      String   @default("Active") // e.g., Active, Completed, Cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
