@@ -4,6 +4,12 @@ import { Toaster } from '@/components/ui/toaster'
 import { i18n } from '@/lib/i18n'
 import { getSession } from '@/lib/session'
 import { Header } from '@/components/layout/header'
+import {
+  Sidebar,
+  SidebarInset,
+  SidebarProvider,
+} from '@/components/ui/sidebar'
+import { SideMenu } from '@/components/layout/side-menu'
 
 export const metadata: Metadata = {
   title: i18n.app.title,
@@ -33,10 +39,15 @@ export default async function RootLayout({
       </head>
       <body className="font-body antialiased">
         {session ? (
-          <div className="flex min-h-screen flex-col bg-background">
-            <Header />
-            {children}
-          </div>
+          <SidebarProvider>
+            <Sidebar collapsible="icon">
+              <SideMenu />
+            </Sidebar>
+            <SidebarInset>
+              <Header />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
         ) : (
           children
         )}
