@@ -1,13 +1,14 @@
 'use client'
 
+import * as React from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
+import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -15,14 +16,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import { useToast } from '@/hooks/use-toast'
 import {
   createTicket,
   updateTicket,
   type Ticket,
 } from '@/lib/actions/tickets'
-import { DIET_OPTIONS, MEAL_TIME_OPTIONS } from '@/lib/constants'
+import { DIET_OPTIONS, MEAL_TIME_OPTIONS, ROOM_OPTIONS } from '@/lib/constants'
 import { i18n } from '@/lib/i18n'
+import { cn } from '@/lib/utils'
 
 const ticketFormSchema = z.object({
   patientName: z
@@ -42,16 +64,79 @@ interface TicketFormProps {
   onSuccess: () => void
 }
 
+interface ComboboxProps {
+  options: string[]
+  value: string
+  onValueChange: (value: string) => void
+  placeholder: string
+  searchPlaceholder: string
+}
+
+function Combobox({
+  options,
+  value,
+  onValueChange,
+  placeholder,
+  searchPlaceholder,
+}: ComboboxProps) {
+  const [open, setOpen] = React.useState(false)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between font-normal"
+        >
+          {value || placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command>
+          <CommandInput
+            placeholder={searchPlaceholder}
+            onValueChange={onValueChange}
+            value={value}
+          />
+          <CommandList>
+            <CommandEmpty>{i18n.ticketForm.combobox.noResult}</CommandEmpty>
+            {options.map((option) => (
+              <CommandItem
+                key={option}
+                value={option}
+                onSelect={(currentValue) => {
+                  onValueChange(
+                    currentValue.toLowerCase() === value.toLowerCase()
+                      ? ''
+                      : option
+                  )
+                  setOpen(false)
+                }}
+              >
+                <Check
+                  className={cn(
+                    'mr-2 h-4 w-4',
+                    value.toLowerCase() === option.toLowerCase()
+                      ? 'opacity-100'
+                      : 'opacity-0'
+                  )}
+                />
+                {option}
+              </CommandItem>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
   const { toast } = useToast()
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors, isSubmitting },
-    reset,
-    watch,
-  } = useForm<TicketFormValues>({
+  const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketFormSchema),
     defaultValues: {
       patientName: ticket?.patientName || '',
@@ -63,8 +148,12 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
     },
   })
 
-  const dietValue = watch('diet')
-  const mealTimeValue = watch('mealTime')
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+    reset,
+  } = form
 
   const onSubmit: SubmitHandler<TicketFormValues> = async (data) => {
     const action = ticket ? updateTicket(ticket.id, data) : createTicket(data)
@@ -92,120 +181,131 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="patientName" className="text-right">
-          {i18n.ticketForm.patientNameLabel}
-        </Label>
-        <div className="col-span-3">
-          <Input id="patientName" {...register('patientName')} />
-          {errors.patientName && (
-            <p className="mt-1 text-sm text-destructive">
-              {errors.patientName.message}
-            </p>
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+        <FormField
+          control={control}
+          name="patientName"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.patientNameLabel}
+              </FormLabel>
+              <FormControl className="col-span-3">
+                <Input {...field} />
+              </FormControl>
+            </FormItem>
           )}
-        </div>
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="patientId" className="text-right">
-          {i18n.ticketForm.patientIdLabel}
-        </Label>
-        <div className="col-span-3">
-          <Input id="patientId" {...register('patientId')} />
-          {errors.patientId && (
-            <p className="mt-1 text-sm text-destructive">
-              {errors.patientId.message}
-            </p>
+        />
+        <FormField
+          control={control}
+          name="patientId"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.patientIdLabel}
+              </FormLabel>
+              <FormControl className="col-span-3">
+                <Input {...field} />
+              </FormControl>
+            </FormItem>
           )}
-        </div>
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="room" className="text-right">
-          {i18n.ticketForm.roomLabel}
-        </Label>
-        <div className="col-span-3">
-          <Input id="room" {...register('room')} />
-          {errors.room && (
-            <p className="mt-1 text-sm text-destructive">{errors.room.message}</p>
+        />
+        <FormField
+          control={control}
+          name="room"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.roomLabel}
+              </FormLabel>
+              <div className="col-span-3 flex flex-col">
+                <FormControl>
+                  <Combobox
+                    options={ROOM_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={i18n.ticketForm.selectRoomPlaceholder}
+                    searchPlaceholder={i18n.ticketForm.combobox.searchRoom}
+                  />
+                </FormControl>
+                <FormMessage className="mt-1" />
+              </div>
+            </FormItem>
           )}
-        </div>
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="birthDate" className="text-right">
-          {i18n.ticketForm.birthDateLabel}
-        </Label>
-        <div className="col-span-3">
-          <Input id="birthDate" type="date" {...register('birthDate')} />
-          {errors.birthDate && (
-            <p className="mt-1 text-sm text-destructive">
-              {errors.birthDate.message}
-            </p>
+        />
+        <FormField
+          control={control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.birthDateLabel}
+              </FormLabel>
+              <FormControl className="col-span-3">
+                <Input type="date" {...field} />
+              </FormControl>
+            </FormItem>
           )}
-        </div>
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="diet" className="text-right">
-          {i18n.ticketForm.dietLabel}
-        </Label>
-        <div className="col-span-3">
-          <Select
-            {...register('diet')}
-            onValueChange={(value) => reset({ ...watch(), diet: value })}
-            value={dietValue}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={i18n.ticketForm.selectDietPlaceholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {DIET_OPTIONS.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.diet && (
-            <p className="mt-1 text-sm text-destructive">{errors.diet.message}</p>
+        />
+        <FormField
+          control={control}
+          name="diet"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.dietLabel}
+              </FormLabel>
+              <div className="col-span-3 flex flex-col">
+                <FormControl>
+                  <Combobox
+                    options={DIET_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder={i18n.ticketForm.selectDietPlaceholder}
+                    searchPlaceholder={i18n.ticketForm.combobox.searchDiet}
+                  />
+                </FormControl>
+                <FormMessage className="mt-1" />
+              </div>
+            </FormItem>
           )}
-        </div>
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="mealTime" className="text-right">
-          {i18n.ticketForm.mealTimeLabel}
-        </Label>
-        <div className="col-span-3">
-          <Select
-            {...register('mealTime')}
-            onValueChange={(value) => reset({ ...watch(), mealTime: value })}
-            value={mealTimeValue}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={i18n.ticketForm.selectMealTimePlaceholder}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {MEAL_TIME_OPTIONS.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.mealTime && (
-            <p className="mt-1 text-sm text-destructive">
-              {errors.mealTime.message}
-            </p>
+        />
+        <FormField
+          control={control}
+          name="mealTime"
+          render={({ field }) => (
+            <FormItem className="grid grid-cols-4 items-center gap-4">
+              <FormLabel className="text-right">
+                {i18n.ticketForm.mealTimeLabel}
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl className="col-span-3">
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={i18n.ticketForm.selectMealTimePlaceholder}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {MEAL_TIME_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormItem>
           )}
+        />
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting
+              ? i18n.ticketForm.saving
+              : i18n.ticketForm.saveChanges}
+          </Button>
         </div>
-      </div>
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting
-            ? i18n.ticketForm.saving
-            : i18n.ticketForm.saveChanges}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </Form>
   )
 }

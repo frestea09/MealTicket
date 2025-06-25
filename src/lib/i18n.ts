@@ -27,7 +27,8 @@ export const i18n = {
     birthDateLabel: 'Tanggal Lahir',
     dietLabel: 'Diet',
     mealTimeLabel: 'Waktu Makan',
-    selectDietPlaceholder: 'Pilih diet',
+    selectDietPlaceholder: 'Pilih atau ketik diet...',
+    selectRoomPlaceholder: 'Pilih atau ketik ruangan...',
     selectMealTimePlaceholder: 'Pilih waktu makan',
     saving: 'Menyimpan...',
     saveChanges: 'Simpan perubahan',
@@ -43,6 +44,11 @@ export const i18n = {
       dietRequired: 'Diet harus diisi',
       birthDateRequired: 'Tanggal lahir harus diisi',
       mealTimeRequired: 'Waktu makan harus diisi',
+    },
+    combobox: {
+      noResult: 'Tidak ada hasil.',
+      searchRoom: 'Cari ruangan...',
+      searchDiet: 'Cari diet...',
     },
   },
   ticketManager: {
@@ -89,7 +95,7 @@ export const i18n = {
       "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket.",
     q3_title: 'Bagaimana cara mencari dan memfilter tiket?',
     q3_content:
-      'Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia.',
+      "Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia. Saat mengisi formulir, kolom Ruangan dan Diet kini mendukung input manual atau pemilihan dari daftar.",
     q4_title: 'Apakah data saya akan hilang jika saya menutup browser?',
     q4_content:
       'Ya. Untuk keperluan demonstrasi, aplikasi ini menggunakan penyimpanan sementara di memori server. Ini berarti semua data tiket akan kembali ke data awal setiap kali server atau aplikasi dimulai ulang.',
@@ -106,7 +112,7 @@ export const i18n = {
       'Setelah login, Anda akan melihat dasbor dengan daftar tiket makan demo. Anda bisa menggunakan filter di bagian atas untuk menyaring data berdasarkan nama, ruangan, atau tanggal.',
     step3_title: 'Langkah 3: Mengelola Tiket (Tambah, Ubah, Hapus)',
     step3_content:
-      "Klik 'Tambah Tiket' untuk membuat tiket baru. Gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang ada untuk mengelolanya. Ingat, semua perubahan ini bersifat sementara dan akan hilang saat server di-restart.",
+      "Klik 'Tambah Tiket' untuk membuat tiket baru. Kolom Ruangan dan Diet sekarang memungkinkan Anda memilih dari daftar yang ada atau mengetikkan nilai baru secara manual. Gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang ada untuk mengelolanya.",
     step4_title: 'Langkah 4: Mencetak Tiket',
     step4_content:
       "Anda memiliki opsi untuk mencetak tiket satu per satu dengan tombol 'Cetak' di setiap baris, atau mencetak semua tiket yang sedang ditampilkan di halaman dengan tombol 'Cetak Halaman' di atas tabel.",
