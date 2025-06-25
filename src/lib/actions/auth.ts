@@ -1,8 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import prisma from "@/lib/prisma";
-import bcrypt from "bcryptjs";
 import { createSession, deleteSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -25,24 +23,16 @@ export async function login(prevState: any, formData: FormData) {
 
   const { username, password } = validatedFields.data;
 
-  try {
-    const user = await prisma.user.findUnique({ where: { username } });
+  // Using dummy credentials for demo purposes
+  const DUMMY_USERNAME = "admin";
+  const DUMMY_PASSWORD = "password";
+  const DUMMY_USER_ID = 1;
 
-    if (!user) {
-      return { error: "Invalid username or password" };
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordMatch) {
-      return { error: "Invalid username or password" };
-    }
-
-    await createSession(user.id);
-  } catch (error) {
-    console.error(error);
-    return { error: "An unexpected error occurred. Please try again." };
+  if (username !== DUMMY_USERNAME || password !== DUMMY_PASSWORD) {
+    return { error: "Invalid username or password" };
   }
+
+  await createSession(DUMMY_USER_ID);
   
   redirect("/");
 }
