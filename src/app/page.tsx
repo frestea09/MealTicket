@@ -9,8 +9,10 @@ export default async function Home({
   const query = typeof searchParams?.query === "string" ? searchParams.query : undefined;
   const room = typeof searchParams?.room === "string" ? searchParams.room : undefined;
   const date = typeof searchParams?.date === "string" ? searchParams.date : undefined;
+  const page = typeof searchParams?.page === 'string' ? Number(searchParams.page) : 1;
+  const limit = typeof searchParams?.limit === 'string' ? Number(searchParams.limit) : 5;
 
-  const tickets = await getTickets({ query, room, date });
+  const { tickets, totalPages, currentPage } = await getTickets({ query, room, date, page, limit });
 
-  return <TicketManager tickets={tickets} />;
+  return <TicketManager tickets={tickets} totalPages={totalPages} currentPage={currentPage} />;
 }

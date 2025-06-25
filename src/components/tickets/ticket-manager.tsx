@@ -1,14 +1,14 @@
 "use client";
 
 import type { Ticket } from "@prisma/client";
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { PlusCircle, Printer, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -42,7 +42,7 @@ import { logout } from "@/lib/actions/auth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
-export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }) {
+export function TicketManager({ tickets, totalPages, currentPage }: { tickets: Ticket[], totalPages: number, currentPage: number }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -53,6 +53,7 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
     if (term) {
       params.set("query", term);
     } else {
@@ -63,6 +64,7 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
     if (value) {
       params.set(key, value);
     } else {
@@ -70,6 +72,12 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
     }
     router.replace(`/?${params.toString()}`);
   }
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(newPage));
+    router.replace(`/?${params.toString()}`);
+  };
 
   const handleEdit = (ticket: Ticket) => {
     setEditingTicket(ticket);
@@ -96,11 +104,6 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
     setDialogOpen(false);
     setEditingTicket(null);
   }
-
-  const uniqueRooms = useMemo(() => {
-    const rooms = new Set(initialTickets.map(t => t.room));
-    return Array.from(rooms);
-  }, [initialTickets]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -139,8 +142,8 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
               />
               <div className="flex-grow" />
               <div className="flex gap-2">
-                <Button onClick={() => generateTicketPdf(initialTickets)} variant="outline">
-                  <Printer className="mr-2 h-4 w-4" /> Print Filtered
+                <Button onClick={() => generateTicketPdf(tickets)} variant="outline">
+                  <Printer className="mr-2 h-4 w-4" /> Print Page
                 </Button>
 
                 <Dialog open={dialogOpen} onOpenChange={(open) => {
@@ -179,8 +182,8 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {initialTickets.length > 0 ? (
-                  initialTickets.map((ticket) => (
+                {tickets.length > 0 ? (
+                  tickets.map((ticket) => (
                     <TableRow key={ticket.id}>
                       <TableCell>
                         <div className="font-medium">{ticket.patientName}</div>
@@ -205,6 +208,31 @@ export function TicketManager({ tickets: initialTickets }: { tickets: Ticket[] }
               </TableBody>
             </Table>
           </CardContent>
+          {totalPages > 1 && (
+            <CardFooter className="flex items-center justify-between pt-6">
+              <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </CardFooter>
+          )}
         </Card>
       </main>
       
