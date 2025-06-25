@@ -26,7 +26,7 @@ model Ticket {
   diet        String
   birthDate   DateTime
   mealTime    String
-  ticketDate  DateTime @default(now())
+  ticketDate  DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -4,17 +4,31 @@ import { z } from 'zod'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import { i18n } from '../i18n'
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+
+const prisma = new PrismaClient()
 
 const loginSchema = z.object({
   username: z.string().min(3, i18n.actions.auth.usernameRequired),
   password: z.string().min(6, i18n.actions.auth.passwordRequired),
 })
 
-// Dummy user for demonstration
-const dummyUser = {
-  id: 1,
-  username: 'admin',
-  password: 'password', // In a real app, this should be a hash
+async function getAdminUser() {
+  let adminUser = await prisma.user.findUnique({
+    where: { username: 'admin' },
+  })
+
+  if (!adminUser) {
+    const hashedPassword = await bcrypt.hash('password', 10)
+    adminUser = await prisma.user.create({
+      data: {
+        username: 'admin',
+        password: hashedPassword,
+      },
+    })
+  }
+  return adminUser
 }
 
 export async function login(prevState: any, formData: FormData) {
@@ -30,11 +44,24 @@ export async function login(prevState: any, formData: FormData) {
 
   const { username, password } = validatedFields.data
 
-  if (username === dummyUser.username && password === dummyUser.password) {
-    await createSession(dummyUser.id)
-    redirect('/')
-  } else {
-    return { error: i18n.actions.auth.invalidCredentials }
+  try {
+    const user = await getAdminUser()
+
+    if (username.toLowerCase() !== user.username) {
+      return { error: i18n.actions.auth.invalidCredentials }
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (isPasswordValid) {
+      await createSession(user.id)
+      redirect('/')
+    } else {
+      return { error: i18n.actions.auth.invalidCredentials }
+    }
+  } catch (error) {
+    console.error('Login error:', error)
+    return { error: 'An unexpected error occurred.' }
   }
 }
 

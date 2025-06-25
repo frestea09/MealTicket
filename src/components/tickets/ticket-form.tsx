@@ -5,6 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
+import type { Ticket } from '@prisma/client'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,11 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
-import {
-  createTicket,
-  updateTicket,
-  type Ticket,
-} from '@/lib/actions/tickets'
+import { createTicket, updateTicket } from '@/lib/actions/tickets'
 import { DIET_OPTIONS, MEAL_TIME_OPTIONS, ROOM_OPTIONS } from '@/lib/constants'
 import { i18n } from '@/lib/i18n'
 import { Combobox } from './combobox'

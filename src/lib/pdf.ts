@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import type { Ticket } from '@/lib/actions/tickets'
+import type { Ticket } from '@prisma/client'
 import { format } from 'date-fns'
 import { i18n } from './i18n'
 
