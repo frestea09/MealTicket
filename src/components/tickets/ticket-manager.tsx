@@ -5,7 +5,6 @@ import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebouncedCallback } from 'use-debounce'
 import { PlusCircle, Printer } from 'lucide-react'
-import { format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,16 +13,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import {
   Dialog,
   DialogContent,
@@ -46,6 +36,8 @@ import { generateTicketPdf } from '@/lib/pdf'
 import { deleteTicket } from '@/lib/actions/tickets'
 import { useToast } from '@/hooks/use-toast'
 import { i18n } from '@/lib/i18n'
+import { TicketTable } from './ticket-table'
+import { TicketPagination } from './ticket-pagination'
 
 export function TicketManager({
   tickets,
@@ -97,7 +89,7 @@ export function TicketManager({
     setDialogOpen(true)
   }
 
-  const handleDelete = async () => {
+  const handleDeleteConfirm = async () => {
     if (deletingTicketId) {
       const result = await deleteTicket(deletingTicketId)
       if (result.success) {
@@ -188,96 +180,17 @@ export function TicketManager({
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{i18n.ticketManager.table.patientName}</TableHead>
-                  <TableHead>{i18n.ticketManager.table.room}</TableHead>
-                  <TableHead>{i18n.ticketManager.table.diet}</TableHead>
-                  <TableHead>{i18n.ticketManager.table.mealTime}</TableHead>
-                  <TableHead>{i18n.ticketManager.table.date}</TableHead>
-                  <TableHead className="text-right">
-                    {i18n.ticketManager.table.actions}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tickets.length > 0 ? (
-                  tickets.map((ticket) => (
-                    <TableRow key={ticket.id}>
-                      <TableCell>
-                        <div className="font-medium">{ticket.patientName}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {ticket.patientId}
-                        </div>
-                      </TableCell>
-                      <TableCell>{ticket.room}</TableCell>
-                      <TableCell>{ticket.diet}</TableCell>
-                      <TableCell>{ticket.mealTime}</TableCell>
-                      <TableCell>
-                        {format(new Date(ticket.ticketDate), 'dd MMM yyyy')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => generateTicketPdf([ticket])}
-                        >
-                          {i18n.ticketManager.printAction}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(ticket)}
-                        >
-                          {i18n.ticketManager.editAction}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => setDeletingTicketId(ticket.id)}
-                        >
-                          {i18n.ticketManager.deleteAction}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center">
-                      {i18n.ticketManager.noTickets}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+            <TicketTable
+              tickets={tickets}
+              onEdit={handleEdit}
+              onDelete={setDeletingTicketId}
+            />
           </CardContent>
-          {totalPages > 1 && (
-            <CardFooter className="flex items-center justify-between pt-6">
-              <span className="text-sm text-muted-foreground">
-                {i18n.ticketManager.pagination(currentPage, totalPages)}
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage <= 1}
-                >
-                  {i18n.ticketManager.previousPage}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= totalPages}
-                >
-                  {i18n.ticketManager.nextPage}
-                </Button>
-              </div>
-            </CardFooter>
-          )}
+          <TicketPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </Card>
       </main>
 
@@ -298,7 +211,7 @@ export function TicketManager({
             <AlertDialogCancel>
               {i18n.ticketManager.deleteDialog.cancel}
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
+            <AlertDialogAction onClick={handleDeleteConfirm}>
               {i18n.ticketManager.deleteDialog.confirm}
             </AlertDialogAction>
           </AlertDialogFooter>
