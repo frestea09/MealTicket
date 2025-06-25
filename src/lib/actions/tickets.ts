@@ -1,9 +1,19 @@
 "use server";
 
 import { z } from "zod";
-import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
+import type { Ticket } from "@prisma/client";
+
+// In-memory store for demonstration purposes
+let tickets: Ticket[] = [
+    { id: 1, patientName: 'Budi Santoso', patientId: 'P001', room: '101A', diet: 'Biasa', birthDate: new Date('1985-05-15'), mealTime: 'Pagi', ticketDate: new Date(), createdAt: new Date(), updatedAt: new Date() },
+    { id: 2, patientName: 'Ani Yudhoyono', patientId: 'P002', room: '102B', diet: 'Bubur', birthDate: new Date('1990-09-20'), mealTime: 'Siang', ticketDate: new Date(), createdAt: new Date(), updatedAt: new Date() },
+    { id: 3, patientName: 'Cakra Khan', patientId: 'P003', room: '201A', diet: 'Cair', birthDate: new Date('1978-11-30'), mealTime: 'Malam', ticketDate: new Date(), createdAt: new Date(), updatedAt: new Date() },
+    { id: 4, patientName: 'Dewi Persik', patientId: 'P004', room: '202B', diet: 'Sonde', birthDate: new Date('2001-02-10'), mealTime: 'Pagi', ticketDate: new Date(), createdAt: new Date(), updatedAt: new Date() },
+    { id: 5, patientName: 'Eko Patrio', patientId: 'P005', room: '301A', diet: 'Biasa', birthDate: new Date('1995-07-25'), mealTime: 'Siang', ticketDate: new Date(Date.now() - 24 * 60 * 60 * 1000), createdAt: new Date(), updatedAt: new Date() },
+];
+let nextId = 6;
 
 const ticketSchema = z.object({
   patientName: z.string().min(1, "Patient name is required"),
@@ -22,9 +32,14 @@ export async function createTicket(data: unknown) {
   }
 
   try {
-    await prisma.ticket.create({
-      data: validatedFields.data,
-    });
+    const newTicket: Ticket = {
+      id: nextId++,
+      ...validatedFields.data,
+      ticketDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    tickets.unshift(newTicket); // Add to the beginning of the array
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -41,10 +56,16 @@ export async function updateTicket(id: number, data: unknown) {
   }
   
   try {
-    await prisma.ticket.update({
-      where: { id },
-      data: validatedFields.data,
-    });
+    const ticketIndex = tickets.findIndex((t) => t.id === id);
+    if (ticketIndex === -1) {
+        return { error: "Ticket not found." };
+    }
+    const updatedTicket: Ticket = {
+        ...tickets[ticketIndex],
+        ...validatedFields.data,
+        updatedAt: new Date()
+    }
+    tickets[ticketIndex] = updatedTicket;
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -55,9 +76,11 @@ export async function updateTicket(id: number, data: unknown) {
 
 export async function deleteTicket(id: number) {
   try {
-    await prisma.ticket.delete({
-      where: { id },
-    });
+    const initialLength = tickets.length;
+    tickets = tickets.filter((t) => t.id !== id);
+    if (tickets.length === initialLength) {
+        return { error: "Ticket not found." };
+    }
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -76,34 +99,30 @@ export const getTickets = cache(async ({
   date?: string;
 }) => {
   try {
-    const where: any = {};
+    let filteredTickets = [...tickets];
+    
     if (query) {
-      where.OR = [
-        { patientName: { contains: query, mode: "insensitive" } },
-        { patientId: { contains: query, mode: "insensitive" } },
-      ];
+      filteredTickets = filteredTickets.filter(t => 
+        t.patientName.toLowerCase().includes(query.toLowerCase()) ||
+        t.patientId.toLowerCase().includes(query.toLowerCase())
+      );
     }
     if (room) {
-      where.room = { contains: room, mode: "insensitive" };
+      filteredTickets = filteredTickets.filter(t => t.room.toLowerCase().includes(room.toLowerCase()));
     }
     if (date) {
       const startDate = new Date(date);
-      startDate.setHours(0, 0, 0, 0);
+      startDate.setUTCHours(0, 0, 0, 0);
       const endDate = new Date(date);
-      endDate.setHours(23, 59, 59, 999);
-      where.ticketDate = {
-        gte: startDate,
-        lte: endDate,
-      };
+      endDate.setUTCHours(23, 59, 59, 999);
+      
+      filteredTickets = filteredTickets.filter(t => {
+        const ticketDate = new Date(t.ticketDate);
+        return ticketDate >= startDate && ticketDate <= endDate;
+      });
     }
 
-    const tickets = await prisma.ticket.findMany({
-      where,
-      orderBy: {
-        ticketDate: "desc",
-      },
-    });
-    return tickets;
+    return filteredTickets.sort((a, b) => b.ticketDate.getTime() - a.ticketDate.getTime());
   } catch (error) {
     console.error(error);
     return [];
