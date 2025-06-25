@@ -1,9 +1,25 @@
-// This file is intentionally left empty to fix a routing issue.
-// The actual layout logic is now in /src/app/layout.tsx.
-export default function PlaceholderLayout({
+import { Header } from '@/components/layout/header'
+import { SideMenu } from '@/components/layout/side-menu'
+import {
+  Sidebar,
+  SidebarInset,
+  SidebarProvider,
+} from '@/components/ui/sidebar'
+
+export default async function ProtectedLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
-  return <>{children}</>
+}>) {
+  return (
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SideMenu />
+      </Sidebar>
+      <SidebarInset>
+        <Header />
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }

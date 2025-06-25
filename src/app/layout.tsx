@@ -2,27 +2,17 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { i18n } from '@/lib/i18n'
-import { getSession } from '@/lib/session'
-import { Header } from '@/components/layout/header'
-import {
-  Sidebar,
-  SidebarInset,
-  SidebarProvider,
-} from '@/components/ui/sidebar'
-import { SideMenu } from '@/components/layout/side-menu'
 
 export const metadata: Metadata = {
   title: i18n.app.title,
   description: i18n.app.description,
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await getSession()
-
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
@@ -38,19 +28,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        {session ? (
-          <SidebarProvider>
-            <Sidebar collapsible="icon">
-              <SideMenu />
-            </Sidebar>
-            <SidebarInset>
-              <Header />
-              {children}
-            </SidebarInset>
-          </SidebarProvider>
-        ) : (
-          children
-        )}
+        {children}
         <Toaster />
       </body>
     </html>
