@@ -14,6 +14,16 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [state, formAction] = useFormState(login, undefined);
+
+  const errorMessage = React.useMemo(() => {
+    if (!state?.error) return null;
+    if (typeof state.error === 'string') {
+      return state.error;
+    }
+    // Handle Zod field errors
+    const errorMessages = Object.values(state.error).flat();
+    return errorMessages.join(", ");
+  }, [state]);
   
   return (
     <div className={cn("grid gap-6", className)} {...props}>
@@ -36,12 +46,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           <Input id="password" name="password" type="password" required placeholder="••••••••" />
         </div>
         
-        {state?.error && (
+        {errorMessage && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              {typeof state.error === 'string' ? state.error : 'An error occurred.'}
+              {errorMessage}
             </AlertDescription>
           </Alert>
         )}
