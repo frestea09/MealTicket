@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
-import type { Ticket } from '@prisma/client'
+import type { Ticket } from '@/lib/actions/tickets'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

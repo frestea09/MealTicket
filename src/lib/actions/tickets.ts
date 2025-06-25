@@ -3,10 +3,49 @@
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { i18n } from '../i18n'
-import prisma from '@/lib/prisma'
-import type { Ticket } from '@prisma/client'
+
+export interface Ticket {
+  id: number
+  patientName: string
+  patientId: string
+  room: string
+  diet: string
+  birthDate: Date
+  mealTime: string
+  ticketDate: Date
+  createdAt: Date
+  updatedAt: Date
+}
 
 export type { Ticket }
+
+let tickets: Ticket[] = [
+  {
+    id: 1,
+    patientName: 'Budi Santoso',
+    patientId: 'P001',
+    room: 'Mawar',
+    diet: 'Bubur',
+    birthDate: new Date('1985-05-15'),
+    mealTime: 'Pagi',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 2,
+    patientName: 'Siti Aminah',
+    patientId: 'P002',
+    room: 'Melati',
+    diet: 'Biasa',
+    birthDate: new Date('1990-11-20'),
+    mealTime: 'Siang',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+]
+let nextId = 3
 
 const ticketSchema = z.object({
   patientName: z
@@ -26,19 +65,16 @@ export async function createTicket(data: unknown) {
     return { error: validatedFields.error.flatten().fieldErrors }
   }
 
-  try {
-    await prisma.ticket.create({
-      data: {
-        ...validatedFields.data,
-        ticketDate: new Date(),
-      },
-    })
-    revalidatePath('/')
-    return { success: true }
-  } catch (error) {
-    console.error(error)
-    return { error: i18n.actions.tickets.createFailed }
+  const newTicket: Ticket = {
+    id: nextId++,
+    ...validatedFields.data,
+    ticketDate: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
+  tickets.unshift(newTicket)
+  revalidatePath('/')
+  return { success: true }
 }
 
 export async function updateTicket(id: number, data: unknown) {
@@ -48,37 +84,28 @@ export async function updateTicket(id: number, data: unknown) {
     return { error: validatedFields.error.flatten().fieldErrors }
   }
 
-  try {
-    const ticket = await prisma.ticket.findUnique({ where: { id } })
-    if (!ticket) {
-      return { error: i18n.actions.tickets.notFound }
-    }
-
-    await prisma.ticket.update({
-      where: { id },
-      data: validatedFields.data,
-    })
-    revalidatePath('/')
-    return { success: true }
-  } catch (error) {
-    console.error(error)
-    return { error: i18n.actions.tickets.updateFailed }
+  const ticketIndex = tickets.findIndex((t) => t.id === id)
+  if (ticketIndex === -1) {
+    return { error: i18n.actions.tickets.notFound }
   }
+
+  tickets[ticketIndex] = {
+    ...tickets[ticketIndex],
+    ...validatedFields.data,
+    updatedAt: new Date(),
+  }
+  revalidatePath('/')
+  return { success: true }
 }
 
 export async function deleteTicket(id: number) {
-  try {
-    const ticket = await prisma.ticket.findUnique({ where: { id } })
-    if (!ticket) {
-      return { error: i18n.actions.tickets.notFound }
-    }
-    await prisma.ticket.delete({ where: { id } })
-    revalidatePath('/')
-    return { success: true }
-  } catch (error) {
-    console.error(error)
-    return { error: i18n.actions.tickets.deleteFailed }
+  const ticketIndex = tickets.findIndex((t) => t.id === id)
+  if (ticketIndex === -1) {
+    return { error: i18n.actions.tickets.notFound }
   }
+  tickets.splice(ticketIndex, 1)
+  revalidatePath('/')
+  return { success: true }
 }
 
 export async function getTickets({
@@ -94,57 +121,42 @@ export async function getTickets({
   page?: number
   limit?: number
 }) {
-  try {
-    const where: any = {}
-    if (query) {
-      where.OR = [
-        { patientName: { contains: query, mode: 'insensitive' } },
-        { patientId: { contains: query, mode: 'insensitive' } },
-      ]
-    }
-    if (room) {
-      where.room = { contains: room, mode: 'insensitive' }
-    }
-    if (date) {
-      const filterDate = new Date(date)
-      const startOfDay = new Date(
-        filterDate.getFullYear(),
-        filterDate.getMonth(),
-        filterDate.getDate()
-      )
-      const endOfDay = new Date(
-        filterDate.getFullYear(),
-        filterDate.getMonth(),
-        filterDate.getDate() + 1
-      )
-      where.ticketDate = {
-        gte: startOfDay,
-        lt: endOfDay,
-      }
-    }
+  let filteredTickets = tickets
 
-    const totalTickets = await prisma.ticket.count({ where })
-    const totalPages = Math.ceil(totalTickets / limit)
-    const offset = (page - 1) * limit
+  if (query) {
+    filteredTickets = filteredTickets.filter(
+      (t) =>
+        t.patientName.toLowerCase().includes(query.toLowerCase()) ||
+        t.patientId.toLowerCase().includes(query.toLowerCase())
+    )
+  }
 
-    const tickets = await prisma.ticket.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: offset,
+  if (room) {
+    filteredTickets = filteredTickets.filter((t) =>
+      t.room.toLowerCase().includes(room.toLowerCase())
+    )
+  }
+
+  if (date) {
+    const filterDate = new Date(date)
+    filteredTickets = filteredTickets.filter((t) => {
+      const ticketDate = new Date(t.ticketDate)
+      return (
+        ticketDate.getFullYear() === filterDate.getFullYear() &&
+        ticketDate.getMonth() === filterDate.getMonth() &&
+        ticketDate.getDate() === filterDate.getDate()
+      )
     })
+  }
 
-    return {
-      tickets,
-      totalPages,
-      currentPage: page,
-    }
-  } catch (error) {
-    console.error(error)
-    return {
-      tickets: [],
-      totalPages: 1,
-      currentPage: 1,
-    }
+  const totalTickets = filteredTickets.length
+  const totalPages = Math.ceil(totalTickets / limit)
+  const offset = (page - 1) * limit
+  const paginatedTickets = filteredTickets.slice(offset, offset + limit)
+
+  return {
+    tickets: paginatedTickets,
+    totalPages,
+    currentPage: page,
   }
 }

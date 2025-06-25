@@ -1,6 +1,6 @@
 'use client'
 
-import type { Ticket } from '@prisma/client'
+import type { Ticket } from '@/lib/actions/tickets'
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebouncedCallback } from 'use-debounce'

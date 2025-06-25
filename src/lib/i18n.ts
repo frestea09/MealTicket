@@ -78,7 +78,7 @@ export const i18n = {
     deleteDialog: {
       title: 'Apakah Anda yakin?',
       description:
-        'Tindakan ini tidak dapat dibatalkan. Ini akan menghapus tiket makan secara permanen dari database.',
+        'Tindakan ini tidak dapat dibatalkan. Ini akan menghapus tiket makan secara permanen.',
       cancel: 'Batal',
       confirm: 'Hapus',
     },
@@ -92,30 +92,30 @@ export const i18n = {
       "Di halaman dasbor utama, klik tombol 'Tambah Tiket'. Isi formulir dengan detail pasien, diet, dan waktu makan, lalu klik 'Simpan perubahan'. Tiket baru akan langsung muncul di tabel.",
     q2_title: 'Bisakah saya mengedit atau menghapus tiket?',
     q2_content:
-      "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket dari database.",
+      "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket.",
     q3_title: 'Bagaimana cara mencari dan memfilter tiket?',
     q3_content:
-      "Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia. Saat mengisi formulir, kolom Ruangan dan Diet kini mendukung input manual (misal: 'Mawar 1') atau pemilihan dari daftar.",
+      "Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia. Saat mengisi formulir, kolom Ruangan dan Diet mendukung input manual (misal: 'Mawar I') atau pemilihan dari daftar.",
     q4_title: 'Apakah data saya akan hilang jika saya menutup browser?',
     q4_content:
-      'Tidak. Aplikasi ini sekarang menggunakan database SQLite untuk menyimpan semua data tiket dan pengguna. Data Anda akan tetap aman dan tersimpan bahkan jika server dimulai ulang atau Anda menutup browser.',
+      'Ya. Untuk tujuan demonstrasi, aplikasi ini menggunakan data sementara di memori. Semua tiket yang Anda buat atau ubah akan hilang saat server aplikasi dimulai ulang.',
   },
   guidePage: {
     title: 'Panduan Pengguna',
     description:
       'Panduan langkah demi langkah untuk menggunakan aplikasi Manajer Tiket Makan.',
-    step1_title: 'Langkah 1: Inisialisasi Database (Hanya Sekali)',
+    step1_title: 'Langkah 1: Masuk ke Sistem',
     step1_content:
-      "Saat pertama kali menjalankan aplikasi, buka terminal di folder proyek dan jalankan perintah `npx prisma db push`. Perintah ini akan membuat file database `dev.db` dan menyiapkan tabel yang diperlukan. Anda hanya perlu melakukannya sekali.",
-    step2_title: 'Langkah 2: Masuk ke Sistem',
+      "Buka aplikasi dan Anda akan disambut oleh halaman login. Gunakan kredensial demo (username 'admin' dan password 'password') untuk masuk ke dasbor utama.",
+    step2_title: 'Langkah 2: Mengelola Tiket (Tambah, Ubah, Hapus)',
     step2_content:
-      "Buka aplikasi dan Anda akan disambut oleh halaman login. Gunakan kredensial standar (username 'admin' dan password 'password') untuk masuk ke dasbor utama.",
-    step3_title: 'Langkah 3: Mengelola Tiket (Tambah, Ubah, Hapus)',
+      "Klik 'Tambah Tiket' untuk membuat tiket baru. Kolom Ruangan dan Diet memungkinkan Anda memilih dari daftar yang ada atau mengetikkan nilai baru secara manual. Gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang ada untuk mengelolanya.",
+    step3_title: 'Langkah 3: Mencetak Tiket',
     step3_content:
-      "Klik 'Tambah Tiket' untuk membuat tiket baru. Kolom Ruangan dan Diet sekarang memungkinkan Anda memilih dari daftar yang ada atau mengetikkan nilai baru secara manual (contoh: 'Mawar I'). Gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang ada untuk mengelolanya. Semua perubahan akan disimpan ke database.",
-    step4_title: 'Langkah 4: Mencetak Tiket',
-    step4_content:
       "Anda memiliki opsi untuk mencetak tiket satu per satu dengan tombol 'Cetak' di setiap baris, atau mencetak semua tiket yang sedang ditampilkan di halaman dengan tombol 'Cetak Halaman' di atas tabel.",
+    step4_title: 'Penting: Data Bersifat Sementara',
+    step4_content:
+      'Aplikasi ini berjalan dalam mode demonstrasi. Semua data yang Anda masukkan akan hilang jika Anda menyegarkan halaman atau memulai ulang server aplikasi.',
   },
   pdf: {
     filename: 'tiket_makan.pdf',
