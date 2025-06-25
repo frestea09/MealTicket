@@ -1,6 +1,6 @@
 'use client'
 
-import type { Ticket } from '@prisma/client'
+import type { Ticket } from '@/lib/actions/tickets'
 import { format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
