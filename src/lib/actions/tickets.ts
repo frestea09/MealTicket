@@ -3,11 +3,10 @@
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { i18n } from '../i18n'
-import { PrismaClient, type Ticket } from '@prisma/client'
+import prisma from '@/lib/prisma'
+import type { Ticket } from '@prisma/client'
 
 export type { Ticket }
-
-const prisma = new PrismaClient()
 
 const ticketSchema = z.object({
   patientName: z

@@ -4,32 +4,13 @@ import { z } from 'zod'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import { i18n } from '../i18n'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
 
 const loginSchema = z.object({
   username: z.string().min(3, i18n.actions.auth.usernameRequired),
   password: z.string().min(6, i18n.actions.auth.passwordRequired),
 })
-
-async function getAdminUser() {
-  let adminUser = await prisma.user.findUnique({
-    where: { username: 'admin' },
-  })
-
-  if (!adminUser) {
-    const hashedPassword = await bcrypt.hash('password', 10)
-    adminUser = await prisma.user.create({
-      data: {
-        username: 'admin',
-        password: hashedPassword,
-      },
-    })
-  }
-  return adminUser
-}
 
 export async function login(prevState: any, formData: FormData) {
   const validatedFields = loginSchema.safeParse(
@@ -45,9 +26,11 @@ export async function login(prevState: any, formData: FormData) {
   const { username, password } = validatedFields.data
 
   try {
-    const user = await getAdminUser()
+    const user = await prisma.user.findUnique({
+      where: { username: username.toLowerCase() },
+    })
 
-    if (username.toLowerCase() !== user.username) {
+    if (!user) {
       return { error: i18n.actions.auth.invalidCredentials }
     }
 
