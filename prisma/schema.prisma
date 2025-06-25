@@ -19,14 +19,14 @@ model User {
 }
 
 model Ticket {
-  id          Int      @id @default(autoincrement())
-  patientName String
-  patientId   String
-  room        String
-  diet        String
-  birthDate   DateTime
-  mealTime    String
-  ticketDate  DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  patientName  String
+  patientId    String
+  room         String
+  diet         String
+  birthDate    DateTime
+  mealTime     String
+  ticketDate   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
