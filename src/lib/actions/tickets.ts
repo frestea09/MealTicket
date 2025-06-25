@@ -4,9 +4,21 @@ import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { i18n } from '../i18n'
 
+export type Ticket = {
+  id: number
+  patientName: string
+  patientId: string
+  room: string
+  diet: string
+  birthDate: Date
+  mealTime: string
+  ticketDate: Date
+  createdAt: Date
+}
+
 // This is a server-side in-memory store.
 // It will be reset every time the server restarts.
-let tickets = [
+let tickets: Ticket[] = [
   {
     id: 1,
     patientName: 'Budi Santoso',
@@ -83,7 +95,7 @@ export async function createTicket(data: unknown) {
   }
 
   try {
-    const newTicket = {
+    const newTicket: Ticket = {
       id: Math.max(0, ...tickets.map((t) => t.id)) + 1,
       ...validatedFields.data,
       ticketDate: new Date(),
