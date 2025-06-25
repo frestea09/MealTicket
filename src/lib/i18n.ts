@@ -83,33 +83,33 @@ export const i18n = {
     description: 'Temukan jawaban untuk pertanyaan umum di sini.',
     q1_title: 'Bagaimana cara menambahkan tiket baru?',
     q1_content:
-      'Klik tombol "Tambah Tiket" di halaman dasbor. Isi semua kolom yang diperlukan pada formulir yang muncul, lalu klik "Simpan perubahan".',
-    q2_title: 'Bisakah saya mengubah tiket yang sudah dibuat?',
+      "Di halaman dasbor utama, klik tombol 'Tambah Tiket'. Isi formulir dengan detail pasien, diet, dan waktu makan, lalu klik 'Simpan perubahan'. Tiket baru akan langsung muncul di tabel.",
+    q2_title: 'Bisakah saya mengedit atau menghapus tiket?',
     q2_content:
-      'Ya, Anda bisa. Di baris tiket yang ingin diubah, klik tombol "Ubah". Formulir akan terisi dengan data yang ada. Lakukan perubahan yang diperlukan dan simpan.',
-    q3_title: 'Bagaimana cara mencetak tiket?',
+      "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket secara permanen.",
+    q3_title: 'Bagaimana cara mencari dan memfilter tiket?',
     q3_content:
-      'Anda dapat mencetak satu tiket dengan mengklik tombol "Cetak" di baris tiket tersebut, atau mencetak semua tiket di halaman saat ini dengan mengklik tombol "Cetak Halaman" di atas tabel.',
-    q4_title: 'Apakah data yang saya masukkan aman?',
+      'Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia.',
+    q4_title: 'Apakah data saya akan hilang jika saya menutup browser?',
     q4_content:
-      'Aplikasi ini menggunakan sesi aman untuk otentikasi. Namun, karena ini adalah versi demonstrasi, data tiket disimpan secara lokal di server dan akan direset saat server dimulai ulang.',
+      'Tidak. Aplikasi ini sekarang menggunakan database untuk menyimpan semua data tiket dan pengguna. Data Anda akan tetap tersimpan dengan aman dan dapat diakses kembali saat Anda login di sesi berikutnya.',
   },
   guidePage: {
     title: 'Panduan Pengguna',
     description:
       'Panduan langkah demi langkah untuk menggunakan aplikasi Manajer Tiket Makan.',
-    step1_title: 'Langkah 1: Masuk ke Aplikasi',
+    step1_title: 'Langkah 1: Masuk ke Sistem',
     step1_content:
-      'Gunakan nama pengguna "admin" dan kata sandi "password" untuk masuk ke sistem.',
-    step2_title: 'Langkah 2: Mengelola Tiket',
+      "Buka aplikasi dan Anda akan disambut oleh halaman login. Gunakan kredensial yang telah disediakan (misalnya, username 'admin' dan password 'password' untuk pengguna awal) untuk masuk ke dasbor utama.",
+    step2_title: 'Langkah 2: Navigasi Dasbor Utama',
     step2_content:
-      'Setelah masuk, Anda akan melihat dasbor utama. Di sini Anda dapat mencari, memfilter, menambah, mengubah, menghapus, dan mencetak tiket makan pasien.',
-    step3_title: 'Langkah 3: Menambah Tiket Baru',
+      'Setelah login, Anda akan melihat dasbor. Di sini, Anda dapat melihat daftar semua tiket makan pasien. Gunakan filter di bagian atas untuk menyaring data berdasarkan nama, ruangan, atau tanggal. Anda juga bisa menambah tiket baru dari sini.',
+    step3_title: 'Langkah 3: Mengelola Tiket (Tambah, Ubah, Hapus)',
     step3_content:
-      'Klik tombol "Tambah Tiket". Sebuah dialog akan muncul. Isi informasi pasien dan detail makanan, lalu simpan.',
-    step4_title: 'Langkah 4: Keluar',
+      "Untuk menambah tiket, klik 'Tambah Tiket'. Untuk mengubah atau menghapus, gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang diinginkan. Semua perubahan akan langsung tersimpan di database.",
+    step4_title: 'Langkah 4: Mencetak Tiket',
     step4_content:
-      'Setelah selesai, klik ikon keluar di pojok kanan atas untuk keluar dari sesi Anda dengan aman.',
+      "Anda memiliki opsi untuk mencetak tiket satu per satu dengan tombol 'Cetak' di setiap baris, atau mencetak semua tiket yang sedang ditampilkan di halaman dengan tombol 'Cetak Halaman' di atas tabel.",
   },
   pdf: {
     filename: 'tiket_makan.pdf',

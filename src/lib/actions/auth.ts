@@ -1,9 +1,11 @@
 'use server'
 
 import { z } from 'zod'
+import bcrypt from 'bcryptjs'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import { i18n } from '../i18n'
+import prisma from '../prisma'
 
 const loginSchema = z.object({
   username: z.string().min(3, i18n.actions.auth.usernameRequired),
@@ -23,16 +25,26 @@ export async function login(prevState: any, formData: FormData) {
 
   const { username, password } = validatedFields.data
 
-  // Using dummy credentials for demo purposes
-  const DUMMY_USERNAME = 'admin'
-  const DUMMY_PASSWORD = 'password'
-  const DUMMY_USER_ID = 1
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+    })
 
-  if (username !== DUMMY_USERNAME || password !== DUMMY_PASSWORD) {
-    return { error: i18n.actions.auth.invalidCredentials }
+    if (!user) {
+      return { error: i18n.actions.auth.invalidCredentials }
+    }
+
+    const passwordsMatch = await bcrypt.compare(password, user.password)
+
+    if (!passwordsMatch) {
+      return { error: i18n.actions.auth.invalidCredentials }
+    }
+
+    await createSession(user.id)
+  } catch (error) {
+    console.error(error)
+    return { error: 'An unexpected error occurred.' }
   }
-
-  await createSession(DUMMY_USER_ID)
 
   redirect('/')
 }
