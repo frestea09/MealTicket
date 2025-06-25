@@ -3,6 +3,7 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
 const ticketSchema = z.object({
   patientName: z.string().min(1, "Patient name is required"),
@@ -65,7 +66,7 @@ export async function deleteTicket(id: number) {
   }
 }
 
-export async function getTickets({
+export const getTickets = cache(async ({
   query,
   room,
   date,
@@ -73,7 +74,7 @@ export async function getTickets({
   query?: string;
   room?: string;
   date?: string;
-}) {
+}) => {
   try {
     const where: any = {};
     if (query) {
@@ -107,4 +108,4 @@ export async function getTickets({
     console.error(error);
     return [];
   }
-}
+});
