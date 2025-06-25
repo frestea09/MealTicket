@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
 
 const loginSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -39,5 +38,5 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function logout() {
   await deleteSession()
-  revalidatePath('/')
+  redirect('/login')
 }
