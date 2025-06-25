@@ -3,10 +3,11 @@
 import { z } from 'zod'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
+import { i18n } from '../i18n'
 
 const loginSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  username: z.string().min(3, i18n.actions.auth.usernameRequired),
+  password: z.string().min(6, i18n.actions.auth.passwordRequired),
 })
 
 export async function login(prevState: any, formData: FormData) {
@@ -28,7 +29,7 @@ export async function login(prevState: any, formData: FormData) {
   const DUMMY_USER_ID = 1
 
   if (username !== DUMMY_USERNAME || password !== DUMMY_PASSWORD) {
-    return { error: 'Invalid username or password' }
+    return { error: i18n.actions.auth.invalidCredentials }
   }
 
   await createSession(DUMMY_USER_ID)

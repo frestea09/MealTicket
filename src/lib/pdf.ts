@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf'
 import type { Ticket } from '@prisma/client'
 import { format } from 'date-fns'
+import { i18n } from './i18n'
 
 export function generateTicketPdf(tickets: Ticket[]) {
   const doc = new jsPDF()
@@ -50,5 +51,5 @@ export function generateTicketPdf(tickets: Ticket[]) {
     }
   })
 
-  doc.save('meal_tickets.pdf')
+  doc.save(i18n.pdf.filename)
 }

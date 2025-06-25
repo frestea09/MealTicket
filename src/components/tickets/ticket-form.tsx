@@ -19,14 +19,17 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { createTicket, updateTicket } from '@/lib/actions/tickets'
 import { DIET_OPTIONS, MEAL_TIME_OPTIONS } from '@/lib/constants'
+import { i18n } from '@/lib/i18n'
 
 const ticketFormSchema = z.object({
-  patientName: z.string().min(1, 'Patient name is required'),
-  patientId: z.string().min(1, 'Patient ID is required'),
-  room: z.string().min(1, 'Room is required'),
-  diet: z.string().min(1, 'Diet is required'),
-  birthDate: z.string().min(1, 'Birth date is required'),
-  mealTime: z.string().min(1, 'Meal time is required'),
+  patientName: z
+    .string()
+    .min(1, i18n.ticketForm.validation.patientNameRequired),
+  patientId: z.string().min(1, i18n.ticketForm.validation.patientIdRequired),
+  room: z.string().min(1, i18n.ticketForm.validation.roomRequired),
+  diet: z.string().min(1, i18n.ticketForm.validation.dietRequired),
+  birthDate: z.string().min(1, i18n.ticketForm.validation.birthDateRequired),
+  mealTime: z.string().min(1, i18n.ticketForm.validation.mealTimeRequired),
 })
 
 type TicketFormValues = z.infer<typeof ticketFormSchema>
@@ -67,14 +70,18 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
     if (result?.error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: i18n.ticketForm.errorTitle,
         description:
-          typeof result.error === 'string' ? result.error : 'An error occurred.',
+          typeof result.error === 'string'
+            ? result.error
+            : i18n.ticketForm.genericError,
       })
     } else {
       toast({
-        title: 'Success',
-        description: `Ticket ${ticket ? 'updated' : 'created'} successfully.`,
+        title: i18n.ticketForm.successTitle,
+        description: ticket
+          ? i18n.ticketForm.ticketUpdatedSuccess
+          : i18n.ticketForm.ticketCreatedSuccess,
       })
       onSuccess()
       reset()
@@ -85,7 +92,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="patientName" className="text-right">
-          Patient Name
+          {i18n.ticketForm.patientNameLabel}
         </Label>
         <div className="col-span-3">
           <Input id="patientName" {...register('patientName')} />
@@ -98,7 +105,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="patientId" className="text-right">
-          Patient ID
+          {i18n.ticketForm.patientIdLabel}
         </Label>
         <div className="col-span-3">
           <Input id="patientId" {...register('patientId')} />
@@ -111,7 +118,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="room" className="text-right">
-          Room
+          {i18n.ticketForm.roomLabel}
         </Label>
         <div className="col-span-3">
           <Input id="room" {...register('room')} />
@@ -122,7 +129,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="birthDate" className="text-right">
-          Birth Date
+          {i18n.ticketForm.birthDateLabel}
         </Label>
         <div className="col-span-3">
           <Input id="birthDate" type="date" {...register('birthDate')} />
@@ -135,7 +142,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="diet" className="text-right">
-          Diet
+          {i18n.ticketForm.dietLabel}
         </Label>
         <div className="col-span-3">
           <Select
@@ -144,7 +151,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
             value={dietValue}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a diet" />
+              <SelectValue placeholder={i18n.ticketForm.selectDietPlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {DIET_OPTIONS.map((option) => (
@@ -161,7 +168,7 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="mealTime" className="text-right">
-          Meal Time
+          {i18n.ticketForm.mealTimeLabel}
         </Label>
         <div className="col-span-3">
           <Select
@@ -170,7 +177,9 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
             value={mealTimeValue}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select meal time" />
+              <SelectValue
+                placeholder={i18n.ticketForm.selectMealTimePlaceholder}
+              />
             </SelectTrigger>
             <SelectContent>
               {MEAL_TIME_OPTIONS.map((option) => (
@@ -189,7 +198,9 @@ export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
       </div>
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save changes'}
+          {isSubmitting
+            ? i18n.ticketForm.saving
+            : i18n.ticketForm.saveChanges}
         </Button>
       </div>
     </form>

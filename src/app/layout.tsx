@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
+import { i18n } from '@/lib/i18n'
 
 export const metadata: Metadata = {
-  title: 'MealTicket Manager',
-  description: 'Manage patient meal tickets efficiently.',
+  title: i18n.app.title,
+  description: i18n.app.description,
 }
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

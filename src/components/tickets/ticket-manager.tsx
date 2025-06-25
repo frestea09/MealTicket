@@ -47,6 +47,7 @@ import { deleteTicket } from '@/lib/actions/tickets'
 import { logout } from '@/lib/actions/auth'
 import { useToast } from '@/hooks/use-toast'
 import { format } from 'date-fns'
+import { i18n } from '@/lib/i18n'
 
 export function TicketManager({
   tickets,
@@ -102,11 +103,14 @@ export function TicketManager({
     if (deletingTicketId) {
       const result = await deleteTicket(deletingTicketId)
       if (result.success) {
-        toast({ title: 'Success', description: 'Ticket deleted successfully.' })
+        toast({
+          title: i18n.ticketForm.successTitle,
+          description: i18n.ticketManager.deleteSuccess,
+        })
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: i18n.ticketForm.errorTitle,
           description: result.error,
         })
       }
@@ -123,12 +127,12 @@ export function TicketManager({
     <div className="flex min-h-screen flex-col bg-background">
       <header className="flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
         <h1 className="text-lg font-semibold font-headline md:text-xl">
-          MealTicket Manager
+          {i18n.ticketManager.headerTitle}
         </h1>
         <form action={logout}>
           <Button variant="ghost" size="icon" type="submit">
             <LogOut className="h-5 w-5" />
-            <span className="sr-only">Logout</span>
+            <span className="sr-only">{i18n.ticketManager.logout}</span>
           </Button>
         </form>
       </header>
@@ -136,16 +140,16 @@ export function TicketManager({
       <main className="flex-1 p-4 md:p-6">
         <Card>
           <CardHeader>
-            <CardTitle>Patient Meal Tickets</CardTitle>
+            <CardTitle>{i18n.ticketManager.cardTitle}</CardTitle>
             <div className="mt-4 flex flex-col items-center gap-4 md:flex-row">
               <Input
-                placeholder="Search by name or ID..."
+                placeholder={i18n.ticketManager.searchPlaceholder}
                 defaultValue={searchParams.get('query')?.toString()}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="max-w-sm"
               />
               <Input
-                placeholder="Filter by room..."
+                placeholder={i18n.ticketManager.roomFilterPlaceholder}
                 defaultValue={searchParams.get('room')?.toString()}
                 onChange={(e) => handleFilterChange('room', e.target.value)}
                 className="max-w-xs"
@@ -162,7 +166,8 @@ export function TicketManager({
                   onClick={() => generateTicketPdf(tickets)}
                   variant="outline"
                 >
-                  <Printer className="mr-2 h-4 w-4" /> Print Page
+                  <Printer className="mr-2 h-4 w-4" />{' '}
+                  {i18n.ticketManager.printPage}
                 </Button>
 
                 <Dialog
@@ -174,13 +179,16 @@ export function TicketManager({
                 >
                   <DialogTrigger asChild>
                     <Button>
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add Ticket
+                      <PlusCircle className="mr-2 h-4 w-4" />{' '}
+                      {i18n.ticketManager.addTicket}
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>
-                        {editingTicket ? 'Edit Ticket' : 'Add New Ticket'}
+                        {editingTicket
+                          ? i18n.ticketManager.editTicketTitle
+                          : i18n.ticketManager.addTicketTitle}
                       </DialogTitle>
                     </DialogHeader>
                     <TicketForm
@@ -197,12 +205,14 @@ export function TicketManager({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Room</TableHead>
-                  <TableHead>Diet</TableHead>
-                  <TableHead>Meal Time</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{i18n.ticketManager.table.patientName}</TableHead>
+                  <TableHead>{i18n.ticketManager.table.room}</TableHead>
+                  <TableHead>{i18n.ticketManager.table.diet}</TableHead>
+                  <TableHead>{i18n.ticketManager.table.mealTime}</TableHead>
+                  <TableHead>{i18n.ticketManager.table.date}</TableHead>
+                  <TableHead className="text-right">
+                    {i18n.ticketManager.table.actions}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -227,14 +237,14 @@ export function TicketManager({
                           size="sm"
                           onClick={() => generateTicketPdf([ticket])}
                         >
-                          Print
+                          {i18n.ticketManager.printAction}
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEdit(ticket)}
                         >
-                          Edit
+                          {i18n.ticketManager.editAction}
                         </Button>
                         <Button
                           variant="ghost"
@@ -242,7 +252,7 @@ export function TicketManager({
                           className="text-destructive hover:text-destructive"
                           onClick={() => setDeletingTicketId(ticket.id)}
                         >
-                          Delete
+                          {i18n.ticketManager.deleteAction}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -250,7 +260,7 @@ export function TicketManager({
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center">
-                      No tickets found.
+                      {i18n.ticketManager.noTickets}
                     </TableCell>
                   </TableRow>
                 )}
@@ -260,7 +270,7 @@ export function TicketManager({
           {totalPages > 1 && (
             <CardFooter className="flex items-center justify-between pt-6">
               <span className="text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
+                {i18n.ticketManager.pagination(currentPage, totalPages)}
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -269,7 +279,7 @@ export function TicketManager({
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage <= 1}
                 >
-                  Previous
+                  {i18n.ticketManager.previousPage}
                 </Button>
                 <Button
                   variant="outline"
@@ -277,7 +287,7 @@ export function TicketManager({
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage >= totalPages}
                 >
-                  Next
+                  {i18n.ticketManager.nextPage}
                 </Button>
               </div>
             </CardFooter>
@@ -291,15 +301,20 @@ export function TicketManager({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {i18n.ticketManager.deleteDialog.title}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              meal ticket.
+              {i18n.ticketManager.deleteDialog.description}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+            <AlertDialogCancel>
+              {i18n.ticketManager.deleteDialog.cancel}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>
+              {i18n.ticketManager.deleteDialog.confirm}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

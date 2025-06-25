@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { cache } from 'react'
 import type { Ticket } from '@prisma/client'
+import { i18n } from '../i18n'
 
 // In-memory store for demonstration purposes
 let tickets: Ticket[] = [
@@ -155,12 +156,14 @@ let tickets: Ticket[] = [
 let nextId = 13
 
 const ticketSchema = z.object({
-  patientName: z.string().min(1, 'Patient name is required'),
-  patientId: z.string().min(1, 'Patient ID is required'),
-  room: z.string().min(1, 'Room is required'),
-  diet: z.string().min(1, 'Diet is required'),
+  patientName: z
+    .string()
+    .min(1, i18n.ticketForm.validation.patientNameRequired),
+  patientId: z.string().min(1, i18n.ticketForm.validation.patientIdRequired),
+  room: z.string().min(1, i18n.ticketForm.validation.roomRequired),
+  diet: z.string().min(1, i18n.ticketForm.validation.dietRequired),
   birthDate: z.coerce.date(),
-  mealTime: z.string().min(1, 'Meal time is required'),
+  mealTime: z.string().min(1, i18n.ticketForm.validation.mealTimeRequired),
 })
 
 export async function createTicket(data: unknown) {
@@ -183,7 +186,7 @@ export async function createTicket(data: unknown) {
     return { success: true }
   } catch (error) {
     console.error(error)
-    return { error: 'Failed to create ticket.' }
+    return { error: i18n.actions.tickets.createFailed }
   }
 }
 
@@ -197,7 +200,7 @@ export async function updateTicket(id: number, data: unknown) {
   try {
     const ticketIndex = tickets.findIndex((t) => t.id === id)
     if (ticketIndex === -1) {
-      return { error: 'Ticket not found.' }
+      return { error: i18n.actions.tickets.notFound }
     }
     const updatedTicket: Ticket = {
       ...tickets[ticketIndex],
@@ -209,7 +212,7 @@ export async function updateTicket(id: number, data: unknown) {
     return { success: true }
   } catch (error) {
     console.error(error)
-    return { error: 'Failed to update ticket.' }
+    return { error: i18n.actions.tickets.updateFailed }
   }
 }
 
@@ -218,13 +221,13 @@ export async function deleteTicket(id: number) {
     const initialLength = tickets.length
     tickets = tickets.filter((t) => t.id !== id)
     if (tickets.length === initialLength) {
-      return { error: 'Ticket not found.' }
+      return { error: i18n.actions.tickets.notFound }
     }
     revalidatePath('/')
     return { success: true }
   } catch (error) {
     console.error(error)
-    return { error: 'Failed to delete ticket.' }
+    return { error: i18n.actions.tickets.deleteFailed }
   }
 }
 
