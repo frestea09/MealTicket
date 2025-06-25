@@ -2,9 +2,67 @@
 
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-import { cache } from 'react'
 import { i18n } from '../i18n'
-import prisma from '../prisma'
+
+// This is a server-side in-memory store.
+// It will be reset every time the server restarts.
+let tickets = [
+  {
+    id: 1,
+    patientName: 'Budi Santoso',
+    patientId: 'P001',
+    room: '101A',
+    diet: 'Biasa',
+    birthDate: new Date('1985-05-15'),
+    mealTime: 'Pagi',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+  },
+  {
+    id: 2,
+    patientName: 'Ani Yudhoyono',
+    patientId: 'P002',
+    room: '102B',
+    diet: 'Bubur',
+    birthDate: new Date('1990-09-20'),
+    mealTime: 'Siang',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+  },
+  {
+    id: 3,
+    patientName: 'Cakra Khan',
+    patientId: 'P003',
+    room: '201A',
+    diet: 'Cair',
+    birthDate: new Date('1978-11-30'),
+    mealTime: 'Malam',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+  },
+  {
+    id: 4,
+    patientName: 'Dewi Persik',
+    patientId: 'P004',
+    room: '202B',
+    diet: 'Sonde',
+    birthDate: new Date('2001-02-10'),
+    mealTime: 'Pagi',
+    ticketDate: new Date(),
+    createdAt: new Date(),
+  },
+  {
+    id: 5,
+    patientName: 'Eko Patrio',
+    patientId: 'P005',
+    room: '301A',
+    diet: 'Biasa',
+    birthDate: new Date('1995-07-25'),
+    mealTime: 'Siang',
+    ticketDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+  },
+]
 
 const ticketSchema = z.object({
   patientName: z
@@ -25,11 +83,13 @@ export async function createTicket(data: unknown) {
   }
 
   try {
-    await prisma.ticket.create({
-      data: {
-        ...validatedFields.data,
-      },
-    })
+    const newTicket = {
+      id: Math.max(0, ...tickets.map((t) => t.id)) + 1,
+      ...validatedFields.data,
+      ticketDate: new Date(),
+      createdAt: new Date(),
+    }
+    tickets.unshift(newTicket)
     revalidatePath('/')
     return { success: true }
   } catch (error) {
@@ -46,12 +106,15 @@ export async function updateTicket(id: number, data: unknown) {
   }
 
   try {
-    await prisma.ticket.update({
-      where: { id },
-      data: {
-        ...validatedFields.data,
-      },
-    })
+    const ticketIndex = tickets.findIndex((t) => t.id === id)
+    if (ticketIndex === -1) {
+      return { error: i18n.actions.tickets.notFound }
+    }
+
+    tickets[ticketIndex] = {
+      ...tickets[ticketIndex],
+      ...validatedFields.data,
+    }
     revalidatePath('/')
     return { success: true }
   } catch (error) {
@@ -62,9 +125,11 @@ export async function updateTicket(id: number, data: unknown) {
 
 export async function deleteTicket(id: number) {
   try {
-    await prisma.ticket.delete({
-      where: { id },
-    })
+    const ticketIndex = tickets.findIndex((t) => t.id === id)
+    if (ticketIndex === -1) {
+      return { error: i18n.actions.tickets.notFound }
+    }
+    tickets.splice(ticketIndex, 1)
     revalidatePath('/')
     return { success: true }
   } catch (error) {
@@ -73,67 +138,66 @@ export async function deleteTicket(id: number) {
   }
 }
 
-export const getTickets = cache(
-  async ({
-    query,
-    room,
-    date,
-    page = 1,
-    limit = 5,
-  }: {
-    query?: string
-    room?: string
-    date?: string
-    page?: number
-    limit?: number
-  }) => {
-    try {
-      const where: any = {}
-      if (query) {
-        where.OR = [
-          { patientName: { contains: query, mode: 'insensitive' } },
-          { patientId: { contains: query, mode: 'insensitive' } },
-        ]
-      }
-      if (room) {
-        where.room = { contains: room, mode: 'insensitive' }
-      }
-      if (date) {
-        const startDate = new Date(date)
-        startDate.setUTCHours(0, 0, 0, 0)
-        const endDate = new Date(date)
-        endDate.setUTCHours(23, 59, 59, 999)
-        where.ticketDate = {
-          gte: startDate,
-          lte: endDate,
-        }
-      }
+export async function getTickets({
+  query,
+  room,
+  date,
+  page = 1,
+  limit = 5,
+}: {
+  query?: string
+  room?: string
+  date?: string
+  page?: number
+  limit?: number
+}) {
+  try {
+    let filteredTickets = [...tickets]
 
-      const totalTickets = await prisma.ticket.count({ where })
-      const totalPages = Math.ceil(totalTickets / limit)
-      const offset = (page - 1) * limit
+    if (query) {
+      filteredTickets = filteredTickets.filter(
+        (ticket) =>
+          ticket.patientName.toLowerCase().includes(query.toLowerCase()) ||
+          ticket.patientId.toLowerCase().includes(query.toLowerCase())
+      )
+    }
 
-      const tickets = await prisma.ticket.findMany({
-        where,
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: limit,
-        skip: offset,
+    if (room) {
+      filteredTickets = filteredTickets.filter((ticket) =>
+        ticket.room.toLowerCase().includes(room.toLowerCase())
+      )
+    }
+
+    if (date) {
+      filteredTickets = filteredTickets.filter((ticket) => {
+        const ticketDate = new Date(ticket.ticketDate)
+        const filterDate = new Date(date)
+        return (
+          ticketDate.getUTCFullYear() === filterDate.getUTCFullYear() &&
+          ticketDate.getUTCMonth() === filterDate.getUTCMonth() &&
+          ticketDate.getUTCDate() === filterDate.getUTCDate()
+        )
       })
+    }
 
-      return {
-        tickets,
-        totalPages,
-        currentPage: page,
-      }
-    } catch (error) {
-      console.error(error)
-      return {
-        tickets: [],
-        totalPages: 1,
-        currentPage: 1,
-      }
+    filteredTickets.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+    const totalTickets = filteredTickets.length
+    const totalPages = Math.ceil(totalTickets / limit)
+    const offset = (page - 1) * limit
+    const paginatedTickets = filteredTickets.slice(offset, offset + limit)
+
+    return {
+      tickets: paginatedTickets,
+      totalPages,
+      currentPage: page,
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      tickets: [],
+      totalPages: 1,
+      currentPage: 1,
     }
   }
-)
+}

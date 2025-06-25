@@ -86,13 +86,13 @@ export const i18n = {
       "Di halaman dasbor utama, klik tombol 'Tambah Tiket'. Isi formulir dengan detail pasien, diet, dan waktu makan, lalu klik 'Simpan perubahan'. Tiket baru akan langsung muncul di tabel.",
     q2_title: 'Bisakah saya mengedit atau menghapus tiket?',
     q2_content:
-      "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket secara permanen.",
+      "Tentu. Pada setiap baris tiket, Anda akan menemukan tombol 'Ubah' dan 'Hapus'. Tombol 'Ubah' akan membuka formulir yang sudah terisi data untuk diedit, sementara tombol 'Hapus' akan meminta konfirmasi sebelum menghapus tiket.",
     q3_title: 'Bagaimana cara mencari dan memfilter tiket?',
     q3_content:
       'Gunakan kolom pencarian di atas tabel untuk mencari pasien berdasarkan nama atau ID. Anda juga dapat memfilter tiket berdasarkan ruangan atau tanggal spesifik menggunakan kolom filter yang tersedia.',
     q4_title: 'Apakah data saya akan hilang jika saya menutup browser?',
     q4_content:
-      'Tidak. Aplikasi ini sekarang menggunakan database untuk menyimpan semua data tiket dan pengguna. Data Anda akan tetap tersimpan dengan aman dan dapat diakses kembali saat Anda login di sesi berikutnya.',
+      'Ya. Untuk keperluan demonstrasi, aplikasi ini menggunakan penyimpanan sementara di memori server. Ini berarti semua data tiket akan kembali ke data awal setiap kali server atau aplikasi dimulai ulang.',
   },
   guidePage: {
     title: 'Panduan Pengguna',
@@ -100,13 +100,13 @@ export const i18n = {
       'Panduan langkah demi langkah untuk menggunakan aplikasi Manajer Tiket Makan.',
     step1_title: 'Langkah 1: Masuk ke Sistem',
     step1_content:
-      "Buka aplikasi dan Anda akan disambut oleh halaman login. Gunakan kredensial yang telah disediakan (misalnya, username 'admin' dan password 'password' untuk pengguna awal) untuk masuk ke dasbor utama.",
+      "Buka aplikasi dan Anda akan disambut oleh halaman login. Gunakan kredensial demo (username 'admin' dan password 'password') untuk masuk ke dasbor utama.",
     step2_title: 'Langkah 2: Navigasi Dasbor Utama',
     step2_content:
-      'Setelah login, Anda akan melihat dasbor. Di sini, Anda dapat melihat daftar semua tiket makan pasien. Gunakan filter di bagian atas untuk menyaring data berdasarkan nama, ruangan, atau tanggal. Anda juga bisa menambah tiket baru dari sini.',
+      'Setelah login, Anda akan melihat dasbor dengan daftar tiket makan demo. Anda bisa menggunakan filter di bagian atas untuk menyaring data berdasarkan nama, ruangan, atau tanggal.',
     step3_title: 'Langkah 3: Mengelola Tiket (Tambah, Ubah, Hapus)',
     step3_content:
-      "Untuk menambah tiket, klik 'Tambah Tiket'. Untuk mengubah atau menghapus, gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang diinginkan. Semua perubahan akan langsung tersimpan di database.",
+      "Klik 'Tambah Tiket' untuk membuat tiket baru. Gunakan tombol 'Ubah' atau 'Hapus' pada tiket yang ada untuk mengelolanya. Ingat, semua perubahan ini bersifat sementara dan akan hilang saat server di-restart.",
     step4_title: 'Langkah 4: Mencetak Tiket',
     step4_content:
       "Anda memiliki opsi untuk mencetak tiket satu per satu dengan tombol 'Cetak' di setiap baris, atau mencetak semua tiket yang sedang ditampilkan di halaman dengan tombol 'Cetak Halaman' di atas tabel.",
