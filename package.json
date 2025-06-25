@@ -12,6 +12,9 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",
     "@genkit-ai/next": "^1.8.0",
