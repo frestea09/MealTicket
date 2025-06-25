@@ -3,6 +3,12 @@ export const i18n = {
     title: 'Manajer Tiket Makan',
     description: 'Kelola tiket makan pasien secara efisien.',
   },
+  header: {
+    dashboard: 'Dasbor',
+    faq: 'FAQ',
+    guide: 'Panduan',
+    logout: 'Keluar',
+  },
   loginPage: {
     title: 'Manajer Tiket Makan',
     description: 'Silakan masuk untuk mengelola tiket makan pasien.',
@@ -40,8 +46,6 @@ export const i18n = {
     },
   },
   ticketManager: {
-    headerTitle: 'Manajer Tiket Makan',
-    logout: 'Keluar',
     cardTitle: 'Tiket Makan Pasien',
     searchPlaceholder: 'Cari berdasarkan nama atau ID...',
     roomFilterPlaceholder: 'Filter berdasarkan ruangan...',
@@ -73,6 +77,39 @@ export const i18n = {
       confirm: 'Hapus',
     },
     deleteSuccess: 'Tiket berhasil dihapus.',
+  },
+  faqPage: {
+    title: 'Pertanyaan yang Sering Diajukan (FAQ)',
+    description: 'Temukan jawaban untuk pertanyaan umum di sini.',
+    q1_title: 'Bagaimana cara menambahkan tiket baru?',
+    q1_content:
+      'Klik tombol "Tambah Tiket" di halaman dasbor. Isi semua kolom yang diperlukan pada formulir yang muncul, lalu klik "Simpan perubahan".',
+    q2_title: 'Bisakah saya mengubah tiket yang sudah dibuat?',
+    q2_content:
+      'Ya, Anda bisa. Di baris tiket yang ingin diubah, klik tombol "Ubah". Formulir akan terisi dengan data yang ada. Lakukan perubahan yang diperlukan dan simpan.',
+    q3_title: 'Bagaimana cara mencetak tiket?',
+    q3_content:
+      'Anda dapat mencetak satu tiket dengan mengklik tombol "Cetak" di baris tiket tersebut, atau mencetak semua tiket di halaman saat ini dengan mengklik tombol "Cetak Halaman" di atas tabel.',
+    q4_title: 'Apakah data yang saya masukkan aman?',
+    q4_content:
+      'Aplikasi ini menggunakan sesi aman untuk otentikasi. Namun, karena ini adalah versi demonstrasi, data tiket disimpan secara lokal di server dan akan direset saat server dimulai ulang.',
+  },
+  guidePage: {
+    title: 'Panduan Pengguna',
+    description:
+      'Panduan langkah demi langkah untuk menggunakan aplikasi Manajer Tiket Makan.',
+    step1_title: 'Langkah 1: Masuk ke Aplikasi',
+    step1_content:
+      'Gunakan nama pengguna "admin" dan kata sandi "password" untuk masuk ke sistem.',
+    step2_title: 'Langkah 2: Mengelola Tiket',
+    step2_content:
+      'Setelah masuk, Anda akan melihat dasbor utama. Di sini Anda dapat mencari, memfilter, menambah, mengubah, menghapus, dan mencetak tiket makan pasien.',
+    step3_title: 'Langkah 3: Menambah Tiket Baru',
+    step3_content:
+      'Klik tombol "Tambah Tiket". Sebuah dialog akan muncul. Isi informasi pasien dan detail makanan, lalu simpan.',
+    step4_title: 'Langkah 4: Keluar',
+    step4_content:
+      'Setelah selesai, klik ikon keluar di pojok kanan atas untuk keluar dari sesi Anda dengan aman.',
   },
   pdf: {
     filename: 'tiket_makan.pdf',

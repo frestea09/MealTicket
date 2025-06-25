@@ -4,7 +4,8 @@ import type { Ticket } from '@prisma/client'
 import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDebouncedCallback } from 'use-debounce'
-import { PlusCircle, Printer, LogOut } from 'lucide-react'
+import { PlusCircle, Printer } from 'lucide-react'
+import { format } from 'date-fns'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,13 +41,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-
 import { TicketForm } from './ticket-form'
 import { generateTicketPdf } from '@/lib/pdf'
 import { deleteTicket } from '@/lib/actions/tickets'
-import { logout } from '@/lib/actions/auth'
 import { useToast } from '@/hooks/use-toast'
-import { format } from 'date-fns'
 import { i18n } from '@/lib/i18n'
 
 export function TicketManager({
@@ -124,19 +122,7 @@ export function TicketManager({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
-        <h1 className="text-lg font-semibold font-headline md:text-xl">
-          {i18n.ticketManager.headerTitle}
-        </h1>
-        <form action={logout}>
-          <Button variant="ghost" size="icon" type="submit">
-            <LogOut className="h-5 w-5" />
-            <span className="sr-only">{i18n.ticketManager.logout}</span>
-          </Button>
-        </form>
-      </header>
-
+    <>
       <main className="flex-1 p-4 md:p-6">
         <Card>
           <CardHeader>
@@ -318,6 +304,6 @@ export function TicketManager({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   )
 }

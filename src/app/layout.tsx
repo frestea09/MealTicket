@@ -2,17 +2,21 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { i18n } from '@/lib/i18n'
+import { getSession } from '@/lib/session'
+import { Header } from '@/components/layout/header'
 
 export const metadata: Metadata = {
   title: i18n.app.title,
   description: i18n.app.description,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getSession()
+
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
@@ -28,7 +32,14 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        {children}
+        {session ? (
+          <div className="flex min-h-screen flex-col bg-background">
+            <Header />
+            {children}
+          </div>
+        ) : (
+          children
+        )}
         <Toaster />
       </body>
     </html>
