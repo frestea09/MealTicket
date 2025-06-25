@@ -36,16 +36,17 @@ export async function login(prevState: any, formData: FormData) {
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
-    if (isPasswordValid) {
-      await createSession(user.id)
-      redirect('/')
-    } else {
+    if (!isPasswordValid) {
       return { error: i18n.actions.auth.invalidCredentials }
     }
+
+    await createSession(user.id)
   } catch (error) {
     console.error('Login error:', error)
     return { error: 'An unexpected error occurred.' }
   }
+
+  redirect('/')
 }
 
 export async function logout() {
