@@ -5,7 +5,6 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
-import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,18 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
 import { useToast } from '@/hooks/use-toast'
 import {
   createTicket,
@@ -44,7 +31,7 @@ import {
 } from '@/lib/actions/tickets'
 import { DIET_OPTIONS, MEAL_TIME_OPTIONS, ROOM_OPTIONS } from '@/lib/constants'
 import { i18n } from '@/lib/i18n'
-import { cn } from '@/lib/utils'
+import { Combobox } from './combobox'
 
 const ticketFormSchema = z.object({
   patientName: z
@@ -62,76 +49,6 @@ type TicketFormValues = z.infer<typeof ticketFormSchema>
 interface TicketFormProps {
   ticket?: Ticket | null
   onSuccess: () => void
-}
-
-interface ComboboxProps {
-  options: string[]
-  value: string
-  onValueChange: (value: string) => void
-  placeholder: string
-  searchPlaceholder: string
-}
-
-function Combobox({
-  options,
-  value,
-  onValueChange,
-  placeholder,
-  searchPlaceholder,
-}: ComboboxProps) {
-  const [open, setOpen] = React.useState(false)
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between font-normal"
-        >
-          {value || placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
-          <CommandInput
-            placeholder={searchPlaceholder}
-            onValueChange={onValueChange}
-            value={value}
-          />
-          <CommandList>
-            <CommandEmpty>{i18n.ticketForm.combobox.noResult}</CommandEmpty>
-            {options.map((option) => (
-              <CommandItem
-                key={option}
-                value={option}
-                onSelect={(currentValue) => {
-                  onValueChange(
-                    currentValue.toLowerCase() === value.toLowerCase()
-                      ? ''
-                      : option
-                  )
-                  setOpen(false)
-                }}
-              >
-                <Check
-                  className={cn(
-                    'mr-2 h-4 w-4',
-                    value.toLowerCase() === option.toLowerCase()
-                      ? 'opacity-100'
-                      : 'opacity-0'
-                  )}
-                />
-                {option}
-              </CommandItem>
-            ))}
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
 }
 
 export function TicketForm({ ticket, onSuccess }: TicketFormProps) {
