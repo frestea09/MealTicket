@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { useFormState, useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
+import { useActionState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +15,7 @@ import { i18n } from '@/lib/i18n'
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [state, formAction] = useFormState(login, undefined)
+  const [state, formAction] = useActionState(login, undefined)
 
   const errorMessage = React.useMemo(() => {
     if (!state?.error) return null
